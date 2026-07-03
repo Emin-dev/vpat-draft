@@ -51,4 +51,3 @@ test/           — Node tests for report/checkout/state logic (run with
 ```
 
 Made by Emin. Part of [Studio](https://emin-dev.github.io/Studio/).
-<!-- redeploy after Pages reset -->
