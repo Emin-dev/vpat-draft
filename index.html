@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VPAT Draft — Draft a VPAT/ACR Against WCAG 2.2</title>
+    <meta name="description" content="A guided wizard for drafting a VPAT/ACR against WCAG 2.2 Level A/AA criteria. Not a compliance guarantee — a drafting accelerator.">
+    <meta name="theme-color" content="#f5efe6">
+    <link rel="icon" href="favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="style.css">
+    <script type="module" src="js/main.js"></script>
+</head>
+<body>
+    <div class="app-shell">
+        <header class="topbar">
+            <span class="brand">📋 VPAT Draft</span>
+            <span class="price-pill">Export — $49</span>
+        </header>
+
+        <section id="intro-view" class="view">
+            <h1>Draft a VPAT/ACR against WCAG 2.2, guided.</h1>
+            <p class="lede">Answer plain-English questions about your product for each of the 55
+            real WCAG 2.2 Level A and AA success criteria. Preview your report for free — pay once
+            to export the full formatted document.</p>
+            <div class="disclaimer-box">
+                <strong>This is a drafting accelerator, not a compliance guarantee.</strong>
+                It structures your self-reported answers into a standard VPAT-style format.
+                It does not test your product, verify your answers, or provide legal certification.
+            </div>
+            <button id="btn-start" class="primary-btn">Start drafting →</button>
+        </section>
+
+        <section id="wizard-view" class="view" hidden>
+            <div class="progress-track">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            <p class="progress-text" id="progress-text"></p>
+
+            <div id="step-product-info" class="step" hidden>
+                <h2>Step 1 — Product information</h2>
+                <p class="step-hint">Standard front-matter for the report.</p>
+                <label>Product name<input type="text" id="f-productName" placeholder="Acme Dashboard"></label>
+                <label>Product version<input type="text" id="f-productVersion" placeholder="2.4.0"></label>
+                <label>Vendor / company name<input type="text" id="f-vendorName" placeholder="Acme Inc."></label>
+                <label>Vendor contact<input type="text" id="f-vendorContact" placeholder="accessibility@acme.com"></label>
+                <label>Evaluation date<input type="date" id="f-evaluationDate"></label>
+                <label>Evaluation methods used<textarea id="f-evaluationMethods" rows="2" placeholder="Manual testing, automated scanner, screen-reader walkthrough..."></textarea></label>
+            </div>
+
+            <div id="criteria-steps"></div>
+
+            <div id="step-preview" class="step" hidden>
+                <h2>Preview &amp; export</h2>
+                <p class="step-hint">This is exactly what you'll get. The free preview is watermarked; export unlocks the clean file.</p>
+                <iframe id="report-preview" title="Report preview" class="report-frame"></iframe>
+                <div class="export-box">
+                    <button id="btn-export" class="primary-btn">Export clean report — $49</button>
+                    <p class="sandbox-note">Sandbox checkout — no real payment is processed.</p>
+                </div>
+            </div>
+
+            <div class="wizard-nav">
+                <button id="btn-back" class="secondary-btn">Back</button>
+                <button id="btn-next" class="primary-btn">Continue</button>
+            </div>
+        </section>
+
+        <div id="checkout-modal" class="modal-backdrop" hidden>
+            <div class="modal-card">
+                <h2>Export report</h2>
+                <p class="sandbox-warning">SANDBOX CHECKOUT — demo mode, no real charge will occur.</p>
+                <div class="price-row"><span>Full VPAT export</span><strong>$49 USD</strong></div>
+                <label>Card number<input type="text" id="pay-card" placeholder="4242 4242 4242 4242"></label>
+                <label>Expiry<input type="text" id="pay-expiry" placeholder="MM/YY"></label>
+                <label>CVC<input type="text" id="pay-cvc" placeholder="123"></label>
+                <button id="btn-pay" class="primary-btn">Pay $49 (sandbox)</button>
+                <p class="test-card-hint">Try <strong>4000 0000 0000 0002</strong> to see the decline path, or any other Luhn-valid number to see success.</p>
+                <p id="checkout-result" class="checkout-result" hidden></p>
+                <button id="btn-close-checkout" class="secondary-btn">Cancel</button>
+            </div>
+        </div>
+
+        <footer class="hub-footer">
+            <span>VPAT Draft — a Studio product.</span>
+            <a href="https://emin-dev.github.io/Studio/">← Back to Studio</a>
+        </footer>
+    </div>
+</body>
+</html>
