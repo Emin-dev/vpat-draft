@@ -160,8 +160,10 @@ el.btnPay.addEventListener('click', async () => {
 
     el.checkoutResult.hidden = false;
     el.checkoutResult.textContent = 'Processing (sandbox)...';
+    el.btnPay.disabled = true;
 
     const result = await submitSandboxPayment({ cardNumber, expiry, cvc });
+    el.btnPay.disabled = false;
     if (result.ok) {
         state.purchased = true;
         saveState(state);

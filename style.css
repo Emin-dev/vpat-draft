@@ -4,11 +4,63 @@
   --surface: rgba(255, 255, 255, 0.78);
   --surface-strong: rgba(255, 255, 255, 0.96);
   --accent: #c98a5b;
-  --radius: 16px;
+  /* Darker variant for text-on-light usage — #c98a5b as text on white is
+     only 2.9:1 (fails WCAG AA 4.5:1). This passes 5.1-5.6:1 across the
+     product's light surfaces (white, cream, translucent glass) while
+     staying in the same hue family, so the palette identity doesn't shift. */
+  --accent-text: #96592a;
   --touch-min: 48px;
+
+  /* 8pt-based spacing scale, reused everywhere instead of stray pixel values. */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* Corner-radius tokens: concentric scale so nested elements step up
+     outward (e.g. an inner 8px-radius chip padded ~12px sits inside a
+     20px-radius card). --radius-pill for fully-rounded pills/tracks. */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
+  --radius-pill: 9999px;
+
+  /* Motion: a gentle iOS-like spring via linear(), used for interactive
+     press/open/close transitions. Falls back cleanly to ease in browsers
+     that don't parse linear() (they just skip the whole declaration and
+     keep the prior `ease` transition already set on the property). */
+  --ease-spring: linear(
+    0, 0.2716 2.3%, 0.9528 12.35%, 1.0885 16.94%, 1.1552 21.61%,
+    1.1746 24.15%, 1.1741 26.82%, 1.1539 31.66%, 1.0692 40.86%,
+    1.0318 45.7%, 1.0067 51.13%,.9946 57.16%, .9908 63.51%,
+    .9977 79.87%, 1
+  );
+  --motion-fast: 150ms;
+  --motion-base: 220ms;
+  --motion-slow: 300ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --motion-fast: 1ms; --motion-base: 1ms; --motion-slow: 1ms; }
 }
 
 * { box-sizing: border-box; }
+
+/* Safe-area padding so fixed/overlay surfaces don't sit under a notch or
+   home-indicator on real iPhones (requires viewport-fit=cover in HTML). */
+@supports (padding: max(0px)) {
+  .app-shell {
+    padding-left: max(20px, env(safe-area-inset-left));
+    padding-right: max(20px, env(safe-area-inset-right));
+  }
+}
 
 html, body {
   margin: 0;
@@ -20,22 +72,22 @@ html, body {
   min-height: 100vh;
 }
 
-.app-shell { max-width: 720px; margin: 0 auto; padding: 20px 20px 40px; }
+.app-shell { max-width: 720px; margin: 0 auto; padding: var(--space-5) var(--space-5) var(--space-10); }
 
 .topbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: var(--space-5);
 }
 .brand { font-weight: 800; font-size: 1.15rem; }
 .price-pill {
   background: var(--surface-strong);
-  border-radius: 999px;
-  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  padding: var(--space-2) var(--space-4);
   font-size: 0.85rem;
   font-weight: 700;
-  color: var(--accent);
+  color: var(--accent-text);
 }
 
 /* Any class below that sets an explicit `display` MUST have a matching
@@ -58,17 +110,19 @@ h2 { font-size: 1.2rem; margin-top: 0; }
 .disclaimer-box {
   background: rgba(230, 180, 60, 0.15);
   border: 1px solid rgba(200, 150, 30, 0.35);
-  border-radius: 12px;
-  padding: 14px 16px;
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
   font-size: 0.9rem;
-  margin: 16px 0 24px;
+  margin: var(--space-4) 0 var(--space-6);
 }
 
 button {
   font-family: inherit;
   border: none;
   cursor: pointer;
-  border-radius: 12px;
+  border-radius: var(--radius-md);
+  transition: transform var(--motion-fast) var(--ease-spring),
+              opacity var(--motion-fast) var(--ease-spring);
 }
 .primary-btn {
   background: var(--accent);
@@ -76,34 +130,44 @@ button {
   font-weight: 800;
   font-size: 1rem;
   min-height: var(--touch-min);
-  padding: 0 20px;
+  padding: 0 var(--space-5);
 }
-.primary-btn:active { transform: scale(0.98); }
+.primary-btn:active, .secondary-btn:active { transform: scale(0.97); }
+.primary-btn:disabled { opacity: 0.6; cursor: default; }
 .secondary-btn {
   background: var(--surface-strong);
   color: var(--ink);
   font-weight: 700;
   min-height: var(--touch-min);
-  padding: 0 20px;
+  padding: 0 var(--space-5);
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--accent-text);
+  outline-offset: 2px;
 }
 
 .progress-track {
-  height: 8px;
+  height: var(--space-2);
   background: rgba(0,0,0,0.08);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   overflow: hidden;
-  margin-bottom: 6px;
+  margin-bottom: var(--space-2);
 }
-.progress-fill { height: 100%; background: var(--accent); transition: width 0.2s ease; }
-.progress-text { font-size: 0.82rem; color: var(--ink-soft); margin: 0 0 20px; }
+.progress-fill { height: 100%; background: var(--accent); transition: width var(--motion-slow) var(--ease-spring); }
+.progress-text { font-size: 0.82rem; color: var(--ink-soft); margin: 0 0 var(--space-5); }
 
-.step-hint { color: var(--ink-soft); font-size: 0.9rem; margin: 4px 0 18px; }
+.step-hint { color: var(--ink-soft); font-size: 0.9rem; margin: var(--space-1) 0 var(--space-5); }
 
 label {
   display: block;
   font-weight: 700;
   font-size: 0.88rem;
-  margin-bottom: 14px;
+  margin-bottom: var(--space-4);
 }
 label input, label textarea, label select {
   display: block;
@@ -111,55 +175,56 @@ label input, label textarea, label select {
   font-family: inherit;
   font-size: 1rem;
   font-weight: 400;
-  padding: 12px;
-  margin-top: 6px;
-  border-radius: 10px;
+  padding: var(--space-3);
+  margin-top: var(--space-2);
+  border-radius: var(--radius-sm);
   border: 1px solid rgba(0,0,0,0.15);
   min-height: var(--touch-min);
+  transition: border-color var(--motion-fast) var(--ease-spring);
 }
 label textarea { min-height: 60px; resize: vertical; }
 
-.criteria-list { display: flex; flex-direction: column; gap: 14px; }
+.criteria-list { display: flex; flex-direction: column; gap: var(--space-4); }
 .criterion-card {
   background: var(--surface);
-  border-radius: var(--radius);
-  padding: 14px 16px;
+  border-radius: var(--radius-lg);
+  padding: var(--space-4);
 }
 .criterion-head {
   display: flex;
   align-items: baseline;
-  gap: 8px;
+  gap: var(--space-2);
   flex-wrap: wrap;
-  margin-bottom: 6px;
+  margin-bottom: var(--space-2);
 }
-.criterion-id { font-weight: 800; color: var(--accent); }
+.criterion-id { font-weight: 800; color: var(--accent-text); }
 .criterion-title { font-weight: 700; }
 .criterion-level-badge {
   font-size: 0.72rem;
   color: var(--ink-soft);
   background: rgba(0,0,0,0.06);
-  border-radius: 999px;
-  padding: 2px 8px;
+  border-radius: var(--radius-pill);
+  padding: 2px var(--space-2);
 }
-.criterion-plain { color: var(--ink-soft); font-size: 0.88rem; margin: 0 0 12px; font-weight: 400; }
-.conformance-label, .remarks-label { margin-bottom: 8px; }
+.criterion-plain { color: var(--ink-soft); font-size: 0.88rem; margin: 0 0 var(--space-3); font-weight: 400; }
+.conformance-label, .remarks-label { margin-bottom: var(--space-2); }
 
 .wizard-nav {
   display: flex;
   justify-content: space-between;
-  margin-top: 24px;
+  margin-top: var(--space-6);
 }
 
 .report-frame {
   width: 100%;
   height: 420px;
   border: 1px solid rgba(0,0,0,0.15);
-  border-radius: 12px;
+  border-radius: var(--radius-md);
   background: white;
 }
 
-.export-box { text-align: center; margin-top: 16px; }
-.sandbox-note { font-size: 0.8rem; color: var(--ink-soft); margin-top: 8px; }
+.export-box { text-align: center; margin-top: var(--space-4); }
+.sandbox-note { font-size: 0.8rem; color: var(--ink-soft); margin-top: var(--space-2); }
 
 .modal-backdrop {
   position: fixed;
@@ -168,24 +233,40 @@ label textarea { min-height: 60px; resize: vertical; }
   align-items: flex-end;
   justify-content: center;
   z-index: 40;
+  animation: backdrop-in var(--motion-base) var(--ease-spring);
 }
 .modal-card {
-  background: white;
-  border-radius: 20px 20px 0 0;
-  padding: 24px 20px;
+  /* Frosted-glass sheet: semi-transparent + blur, GPU-composited so Safari
+     doesn't hit its backdrop-filter perf cliff. Surface area is modest
+     (one bottom-sheet card, not the full screen). */
+  background: var(--surface-strong);
+  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(20px);
+  transform: translate3d(0, 0, 0);
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  padding: var(--space-6) var(--space-5)
+           max(var(--space-6), calc(env(safe-area-inset-bottom) + var(--space-4)))
+           var(--space-5);
   max-width: 480px;
   width: 100%;
   max-height: 88vh;
   overflow-y: auto;
+  animation: sheet-in var(--motion-base) var(--ease-spring);
 }
 @media (min-width: 520px) {
-  .modal-backdrop { align-items: center; padding: 20px; }
-  .modal-card { border-radius: 20px; }
+  .modal-backdrop { align-items: center; padding: var(--space-5); }
+  .modal-card { border-radius: var(--radius-xl); }
 }
+@media (prefers-reduced-motion: reduce) {
+  .modal-backdrop, .modal-card { animation: fade-in var(--motion-base) linear; }
+}
+@keyframes backdrop-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes sheet-in { from { transform: translateY(24px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
 .sandbox-warning {
   background: rgba(230, 130, 60, 0.15);
-  border-radius: 10px;
-  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-4);
   font-weight: 700;
   font-size: 0.85rem;
   color: #a3521a;
@@ -194,26 +275,27 @@ label textarea { min-height: 60px; resize: vertical; }
   display: flex;
   justify-content: space-between;
   font-size: 1.1rem;
-  padding: 12px 0;
+  padding: var(--space-3) 0;
   border-bottom: 1px solid rgba(0,0,0,0.1);
-  margin-bottom: 12px;
+  margin-bottom: var(--space-3);
 }
 .test-card-hint { font-size: 0.8rem; color: var(--ink-soft); }
 .checkout-result {
   background: rgba(0,0,0,0.05);
-  border-radius: 10px;
-  padding: 10px;
+  border-radius: var(--radius-sm);
+  padding: var(--space-3);
   font-size: 0.9rem;
-  margin: 10px 0;
+  margin: var(--space-3) 0;
 }
 
 .hub-footer {
   display: flex;
   justify-content: space-between;
-  margin-top: 32px;
-  padding-top: 16px;
+  margin-top: var(--space-8);
+  padding-top: var(--space-4);
   border-top: 1px solid rgba(0,0,0,0.08);
   font-size: 0.82rem;
   color: var(--ink-soft);
+  padding-bottom: env(safe-area-inset-bottom);
 }
 .hub-footer a { color: var(--ink-soft); }
